@@ -67,6 +67,8 @@ export default function InputPanel({
   const [onboardingExpired, setOnboardingExpired] = useState(false);
   const onboardingDismissedRef = useRef(false);
   const shouldClearAfterAnalyzeRef = useRef(false);
+  const [showLoadingOverlay, setShowLoadingOverlay] = useState(false);
+  const [isOverlayExiting, setIsOverlayExiting] = useState(false);
 
   useEffect(() => {
     if (selectedNode || hasThinkingGraph || onboardingDismissedRef.current) {
@@ -82,9 +84,22 @@ export default function InputPanel({
   }, [hasThinkingGraph, selectedNode]);
 
   useEffect(() => {
+    if (isAnalyzing) {
+      setShowLoadingOverlay(true);
+      setIsOverlayExiting(false);
+      return;
+    }
+
     if (!isAnalyzing && shouldClearAfterAnalyzeRef.current) {
-      shouldClearAfterAnalyzeRef.current = false;
-      setText("");
+      setIsOverlayExiting(true);
+      const clearTimer = window.setTimeout(() => {
+        shouldClearAfterAnalyzeRef.current = false;
+        setShowLoadingOverlay(false);
+        setIsOverlayExiting(false);
+        setText("");
+      }, 220);
+
+      return () => window.clearTimeout(clearTimer);
     }
   }, [isAnalyzing]);
 
@@ -153,9 +168,11 @@ export default function InputPanel({
                   </div>
                 ) : null}
                 <div className="relative">
-                  {isAnalyzing && text ? (
+                  {showLoadingOverlay && text ? (
                     <div
-                      className="pointer-events-none absolute inset-0 whitespace-pre-wrap break-words pr-1 text-[15px] leading-[1.5] composer-loading-gradient-text"
+                      className={`pointer-events-none absolute inset-0 whitespace-pre-wrap break-words pr-1 text-[15px] font-bold leading-[1.5] composer-loading-gradient-text transition-opacity duration-200 ${
+                        isOverlayExiting ? "opacity-0" : "opacity-100"
+                      }`}
                       aria-hidden="true"
                     >
                       {text}
@@ -176,7 +193,7 @@ export default function InputPanel({
                         : TYPE_PLACEHOLDER_COPY[preferredType] || placeholderText || "Add a thought..."
                     }
                     className={`w-full resize-none border-none bg-transparent text-[15px] outline-none min-h-[48px] max-h-[180px] ${
-                      isAnalyzing && text
+                      showLoadingOverlay && text
                         ? "text-transparent caret-transparent placeholder:text-transparent"
                         : "text-slate-700 placeholder:text-slate-400"
                     }`}

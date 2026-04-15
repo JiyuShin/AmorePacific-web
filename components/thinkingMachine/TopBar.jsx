@@ -21,7 +21,6 @@ const TOPBAR_CENTER_TEXT_STYLE = {
   lineHeight: "110%",
   letterSpacing: "-0.32px",
 };
-
 function parseStage(stage) {
   const value = normalizeReasoningStage(stage);
   const isDesign = value.startsWith("design-");
@@ -85,24 +84,10 @@ export default function TopBar({
         className="grid items-start"
         style={{ gridTemplateColumns: `${TOPBAR_SIDE_SLOT_WIDTH}px minmax(0, 1fr) ${TOPBAR_SIDE_SLOT_WIDTH}px` }}
       >
-        <div className="pointer-events-auto w-[382px] justify-self-start">
-          <div className="text-[13px] font-semibold uppercase tracking-[0.18em] text-slate-700/84">
-            Thinking Machine
-          </div>
-          <div
-            className="mt-1 text-[10px] font-medium text-slate-600/84"
-            style={TOPBAR_META_TEXT_STYLE}
-          >
-            <div>Designed by K-Arts cciD</div>
-            <div>Powered by OpenAI</div>
-          </div>
-          <div className="mt-2 h-px w-[144px] bg-slate-500/30" />
-        </div>
-
-        <div className="pointer-events-auto flex justify-center pt-0.5">
+        <div className="pointer-events-auto flex w-[382px] justify-self-start pt-0.5">
           <motion.div
             layout
-            className="flex max-w-[420px] items-center gap-2 text-[14px] font-medium text-slate-700/88"
+            className="flex w-full max-w-[420px] items-center gap-2 text-[14px] font-medium text-slate-700/88"
             style={TOPBAR_CENTER_TEXT_STYLE}
             transition={{ layout: { duration: 0.28, ease: [0.22, 1, 0.36, 1] } }}
           >
@@ -154,6 +139,8 @@ export default function TopBar({
             </div>
           </motion.div>
         </div>
+
+        <div />
 
         <div className="w-[382px] translate-x-[7px] justify-self-end">
           <div className="flex flex-col items-end gap-3">

@@ -9,7 +9,6 @@ import {
 import { AnimatePresence, motion } from "framer-motion";
 import NodeMap from "./NodeMap";
 import LeftCanvasTools from "./LeftCanvasTools";
-import InputPanel from "./InputPanel";
 import RightAgentDrawer from "./RightAgentDrawer";
 import TopBar from "./TopBar";
 import { toConnectorEdges } from "@/lib/thinkingMachine/connectorEdges";
@@ -107,8 +106,8 @@ export default function ThinkingMachine({
     const [nodes, setNodes, baseOnNodesChange] = useNodesState(INITIAL_NODES);
     const [edges, setEdges, onEdgesChange] = useEdgesState(INITIAL_EDGES);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    const [drawerMode, setDrawerMode] = useState("tip");
+    const [isDrawerOpen, setIsDrawerOpen] = useState(true);
+    const [drawerMode, setDrawerMode] = useState("chat");
     const [stage, setStage] = useState("research-diverge");
     const [projectTitle, setProjectTitle] = useState(initialProjectTitle);
     const [canvasMode, setCanvasMode] = useState("personal");
@@ -156,13 +155,9 @@ export default function ThinkingMachine({
     });
 
     const handleDrawerModeChange = useCallback((nextMode) => {
-        if (nextMode === "chat" && isDrawerOpen && drawerMode === "chat") {
-            setIsDrawerOpen(false);
-            return;
-        }
-
         handleDrawerModeToggle(nextMode);
-    }, [drawerMode, handleDrawerModeToggle, isDrawerOpen]);
+        setIsDrawerOpen(true);
+    }, [handleDrawerModeToggle]);
 
     const {
         selectedDraftIds,
@@ -730,6 +725,20 @@ export default function ThinkingMachine({
 
     return (
         <div className="w-full h-screen relative flex flex-col overflow-hidden bg-slate-50">
+            <div
+                className="pointer-events-none absolute bottom-7 left-6 z-[20] flex h-[24.5px] w-[157px] items-center whitespace-nowrap"
+                style={{
+                    fontFamily: '"Pretendard Variable", "Instrument Sans", sans-serif',
+                    fontStyle: "normal",
+                    fontWeight: 600,
+                    fontSize: "13.59805px",
+                    lineHeight: "180%",
+                    letterSpacing: "0.14em",
+                    color: "#4B5D7B",
+                }}
+            >
+                THINKING MACHINE
+            </div>
             <TopBar
                 stage={normalizedStage}
                 onStageChange={setStage}
@@ -826,18 +835,6 @@ export default function ThinkingMachine({
                     </>
                 )}
 
-                <InputPanel
-                    onSubmit={handleInputSubmit}
-                    isAnalyzing={isAnalyzing}
-                    selectedNode={selectedNode}
-                    hasThinkingGraph={hasThinkingGraph}
-                    suggestedTypes={composerSuggestedTypes}
-                    hintText={composerHintText}
-                    stage={reasoningModeProfile.label}
-                    placeholderText={reasoningModeProfile.composerPlaceholder}
-                    selectedNodePromptText={reasoningModeProfile.selectedNodePrompt}
-                />
-
                 {showDraftConvertPrompt && (
                     <div className="pointer-events-none absolute inset-x-0 top-20 z-[75] flex justify-center">
                         <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-white/70 bg-white/72 px-4 py-2 text-[12px] font-semibold text-slate-700 shadow-[0_12px_26px_rgba(0,0,0,0.14)] backdrop-blur-[12px]">
@@ -865,60 +862,62 @@ export default function ThinkingMachine({
                     </div>
                 )}
 
-                {hasThinkingGraph && (
-                    <RightAgentDrawer
-                        isOpen={isDrawerOpen}
-                        mode={drawerMode}
-                        suggestions={suggestions}
-                        onToggleMode={handleDrawerModeChange}
-                        activeSuggestion={activeSuggestion}
-                        selectedNode={selectedNode}
-                        linkedNodes={selectedNodeLinkedNodes}
-                        candidateGraph={pendingCandidatePreview}
-                        currentUserRole={MOCK_CURRENT_USER_ROLE}
-                        projectLastUpdated={projectLastUpdated}
-                        activityLog={activityLog}
-                        lastRefreshedAt={lastRefreshedAt}
-                        onRefreshActivity={refreshProjectCollaborationMeta}
-                        chatMessages={chatMessages}
-                        chatInput={chatInput}
-                        isChatLoading={isChatLoading}
-                        isChatConverting={isChatConverting}
-                        onChatInputChange={setChatInput}
-                        onChatSubmit={handleDrawerChatSubmit}
-                        onChatConvertToNodes={handleDrawerChatConvertToNodes}
-                        onCommitCandidateNodes={handleCommitCandidateNodes}
-                        onCommitCandidateNodesAsPrivate={handleCommitCandidateNodesAsPrivate}
-                        onDiscardCandidateNodes={handleDiscardCandidateNodes}
-                        onPromoteSelectedNode={handlePromoteSelectedNode}
-                        onDemoteSelectedNode={handleDemoteSelectedNode}
-                        onSetNodeVisibility={handleSetNodeVisibility}
-                        onChatContextSelect={handleDrawerContextSelect}
-                        modeLabel={reasoningModeProfile.label}
-                        candidateHint={reasoningModeProfile.candidateHint}
-                        selectedNodeQuickActions={reasoningModeProfile.selectedNodeActions}
-                        uiLanguage="en"
-                        attachedContext={
-                            attachedNodes.length
-                                ? {
-                                    id: "attached-nodes",
-                                    type: "attachedNodes",
-                                    title: attachedNodes.length === 1 ? "Attached node" : `Attached nodes (${attachedNodes.length})`,
-                                    content: "Use these nodes as the primary context for this chat.",
-                                    category: "Insight",
-                                    phase: "Problem",
-                                    sourceType: "mixed",
-                                    visibility: "shared",
-                                    confidence: "medium",
-                                    attached_nodes: attachedNodes,
-                                }
-                                : null
-                        }
-                        chatButtonRef={chatButtonRef}
-                        chatDropZoneRef={chatDropZoneRef}
-                        isChatDropActive={isChatDropActive}
-                    />
-                )}
+                <AnimatePresence>
+                    {isDrawerOpen ? (
+                        <RightAgentDrawer
+                            isOpen={isDrawerOpen}
+                            mode={drawerMode}
+                            suggestions={suggestions}
+                            onToggleMode={handleDrawerModeChange}
+                            activeSuggestion={activeSuggestion}
+                            selectedNode={selectedNode}
+                            linkedNodes={selectedNodeLinkedNodes}
+                            candidateGraph={pendingCandidatePreview}
+                            currentUserRole={MOCK_CURRENT_USER_ROLE}
+                            projectLastUpdated={projectLastUpdated}
+                            activityLog={activityLog}
+                            lastRefreshedAt={lastRefreshedAt}
+                            onRefreshActivity={refreshProjectCollaborationMeta}
+                            chatMessages={chatMessages}
+                            chatInput={chatInput}
+                            isChatLoading={isChatLoading}
+                            isChatConverting={isChatConverting}
+                            onChatInputChange={setChatInput}
+                            onChatSubmit={handleDrawerChatSubmit}
+                            onChatConvertToNodes={handleDrawerChatConvertToNodes}
+                            onCommitCandidateNodes={handleCommitCandidateNodes}
+                            onCommitCandidateNodesAsPrivate={handleCommitCandidateNodesAsPrivate}
+                            onDiscardCandidateNodes={handleDiscardCandidateNodes}
+                            onPromoteSelectedNode={handlePromoteSelectedNode}
+                            onDemoteSelectedNode={handleDemoteSelectedNode}
+                            onSetNodeVisibility={handleSetNodeVisibility}
+                            onChatContextSelect={handleDrawerContextSelect}
+                            modeLabel={reasoningModeProfile.label}
+                            candidateHint={reasoningModeProfile.candidateHint}
+                            selectedNodeQuickActions={reasoningModeProfile.selectedNodeActions}
+                            uiLanguage="en"
+                            attachedContext={
+                                attachedNodes.length
+                                    ? {
+                                        id: "attached-nodes",
+                                        type: "attachedNodes",
+                                        title: attachedNodes.length === 1 ? "Attached node" : `Attached nodes (${attachedNodes.length})`,
+                                        content: "Use these nodes as the primary context for this chat.",
+                                        category: "Insight",
+                                        phase: "Problem",
+                                        sourceType: "mixed",
+                                        visibility: "shared",
+                                        confidence: "medium",
+                                        attached_nodes: attachedNodes,
+                                    }
+                                    : null
+                            }
+                            chatButtonRef={chatButtonRef}
+                            chatDropZoneRef={chatDropZoneRef}
+                            isChatDropActive={isChatDropActive}
+                        />
+                    ) : null}
+                </AnimatePresence>
 
                 <AnimatePresence>
                     {ghostDrag && (

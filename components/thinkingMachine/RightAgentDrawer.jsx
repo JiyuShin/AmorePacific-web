@@ -395,7 +395,7 @@ export default function RightAgentDrawer({
   const sourceMeta = getSourceTypeMeta(activeMeta.sourceType);
   const visibilityMeta = getVisibilityMeta(activeMeta.visibility);
   const drawerFieldBaseFade =
-    "linear-gradient(272.94deg, #C6F1E0 -4.76%, #CDE2FF 113.27%)";
+    "linear-gradient(169.55deg, rgba(199, 251, 201, 0.5) 9.44%, rgba(179, 236, 236, 0.295) 97.4%)";
   const drawerFieldRadialAlpha = "none";
   const drawerFieldLemonStrip = "none";
   const drawerFieldEdgeOverlay = "none";
@@ -435,10 +435,8 @@ export default function RightAgentDrawer({
     onChatSubmit?.();
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="pointer-events-none absolute bottom-0 right-0 top-[118px] z-[45] overflow-visible">
+    <div className="pointer-events-none absolute bottom-0 right-0 top-0 z-[45] overflow-visible">
       <div className="relative flex h-full w-[365px] transform-gpu sm:w-[385px] lg:w-[397px]">
         <div
           className="pointer-events-none absolute inset-y-0 left-0 z-[0] w-[96px]"
@@ -447,12 +445,13 @@ export default function RightAgentDrawer({
         />
         <motion.div
           ref={chatDropZoneRef}
-          className={`relative h-full w-[365px] overflow-hidden rounded-l-[15px] pointer-events-auto opacity-100 sm:w-[385px] lg:w-[397px] ${
+          className={`relative h-full w-[365px] overflow-hidden rounded-none pointer-events-auto opacity-100 sm:w-[385px] lg:w-[397px] ${
             isChat && isChatDropActive ? "ring-4 ring-teal-300/40" : ""
           }`}
           aria-hidden={false}
           initial={{ x: 44, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
+          exit={{ x: 44, opacity: 0 }}
           transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
           style={{
             background: `${drawerFieldRadialAlpha}, ${drawerFieldBaseFade}`,
