@@ -630,13 +630,27 @@ export default function RightAgentDrawer({
 
                     <div className="shrink-0 border-t border-white/65 pt-2">
                       <form onSubmit={handleChatSubmit} className="flex items-center gap-1.5">
-                        <input
-                          value={chatInput}
-                          onChange={(event) => onChatInputChange?.(event.target.value)}
-                          placeholder={selectedNode ? "Add a related thought..." : "Add a thought..."}
-                          disabled={isChatLoading}
-                          className="min-w-0 flex-1 rounded-xl border border-white/70 bg-white/82 px-3 py-2 text-xs text-slate-700 outline-none placeholder:text-slate-400 focus:border-teal-300"
-                        />
+                        <div className="relative min-w-0 flex-1">
+                          {isChatLoading && chatInput ? (
+                            <div
+                              className="drawer-loading-gradient-text pointer-events-none absolute inset-0 flex items-center rounded-xl px-3 py-2 text-xs font-bold"
+                              aria-hidden="true"
+                            >
+                              <span className="block w-full truncate">{chatInput}</span>
+                            </div>
+                          ) : null}
+                          <input
+                            value={chatInput}
+                            onChange={(event) => onChatInputChange?.(event.target.value)}
+                            placeholder={selectedNode ? "Add a related thought..." : "Add a thought..."}
+                            disabled={isChatLoading}
+                            className={`min-w-0 w-full rounded-xl border border-white/70 bg-white/82 px-3 py-2 text-xs outline-none focus:border-teal-300 ${
+                              isChatLoading && chatInput
+                                ? "text-transparent caret-transparent placeholder:text-transparent"
+                                : "text-slate-700 placeholder:text-slate-400"
+                            }`}
+                          />
+                        </div>
                         <button
                           type="submit"
                           disabled={isChatLoading || !chatInput?.trim()}

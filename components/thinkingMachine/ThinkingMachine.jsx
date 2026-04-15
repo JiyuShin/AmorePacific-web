@@ -832,16 +832,6 @@ export default function ThinkingMachine({
                             canvasStage={stage}
                         />
 
-                        <LeftCanvasTools
-                            onAddPostit={createPostitDraft}
-                            onAddImage={createImageDraft}
-                            onZoomIn={handleZoomIn}
-                            onZoomOut={handleZoomOut}
-                            onFitView={handleFitCanvas}
-                            onToggleInteractive={handleToggleCanvasInteractive}
-                            isInteractive={isCanvasInteractive}
-                            uiLanguage="en"
-                        />
                     </>
                 )}
 
