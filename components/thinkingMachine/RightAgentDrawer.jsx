@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Check, GitBranch, Loader2, RefreshCcw, Send } from "lucide-react";
+import { ArrowUp, Check, GitBranch, Loader2, RefreshCcw, Sparkles } from "lucide-react";
 import {
   NODE_VISIBILITY_FLOW,
   getConfidenceMeta,
@@ -372,9 +372,7 @@ export default function RightAgentDrawer({
   onPromoteSelectedNode,
   onDemoteSelectedNode,
   onSetNodeVisibility,
-  onRefreshActivity,
   onChatContextSelect,
-  attachedContext,
   modeLabel,
   candidateHint,
   selectedNodeQuickActions,
@@ -386,8 +384,9 @@ export default function RightAgentDrawer({
   const isTip = mode === "tip";
   const isChat = mode === "chat";
   const contextItems = isChat
-    ? [...(attachedContext ? [attachedContext] : [])]
+    ? []
     : suggestions;
+  const shouldShowContextPanel = contextItems.length > 0 || !isChat;
   const hasTipSignal = suggestions.length > 0;
   const activeMeta = normalizeNodeData(activeSuggestion || {});
   const categoryColors = getTypeMeta(activeMeta.category);
@@ -402,6 +401,9 @@ export default function RightAgentDrawer({
   const chatBottomRef = useRef(null);
   const contextScrollRef = useRef(null);
   const panelScrollRef = useRef(null);
+  const [loadingOverlayText, setLoadingOverlayText] = useState("");
+  const [isLoadingOverlayExiting, setIsLoadingOverlayExiting] = useState(false);
+  const [showDrawerHint, setShowDrawerHint] = useState(true);
   const copy = uiLanguage === "ko"
     ? {
         emptyChat: "노드를 선택해 오른쪽으로 드래그한 뒤 놓으면 채팅 컨텍스트로 첨부됩니다.",
@@ -430,8 +432,34 @@ export default function RightAgentDrawer({
     panelScrollRef.current?.scrollTo({ top: 0, behavior: "auto" });
   }, [mode, activeSuggestion?.id]);
 
+  useEffect(() => {
+    if (selectedNode) {
+      setShowDrawerHint(false);
+      return;
+    }
+
+    setShowDrawerHint(true);
+  }, [selectedNode]);
+
+  useEffect(() => {
+    if (!isChatLoading && loadingOverlayText) {
+      setIsLoadingOverlayExiting(true);
+      const exitTimer = window.setTimeout(() => {
+        setLoadingOverlayText("");
+        setIsLoadingOverlayExiting(false);
+      }, 240);
+
+      return () => window.clearTimeout(exitTimer);
+    }
+  }, [isChatLoading, loadingOverlayText]);
+
   const handleChatSubmit = (event) => {
     event.preventDefault();
+    const submittedText = String(chatInput || "").trim();
+    if (submittedText && !isChatLoading) {
+      setLoadingOverlayText(submittedText);
+      setIsLoadingOverlayExiting(false);
+    }
     onChatSubmit?.();
   };
 
@@ -462,62 +490,71 @@ export default function RightAgentDrawer({
             aria-hidden
             style={{ background: drawerFieldEdgeOverlay }}
           />
-          <div className="relative z-10 flex h-full min-h-0 flex-col justify-end px-6 pb-5 pl-9 pr-6 pt-[24px]">
-            <div className="flex max-h-[89vh] min-h-0 flex-col gap-3">
-            <div
-              ref={contextScrollRef}
-              className={`grid ${isChat ? "grid-cols-1" : "grid-cols-2"} shrink-0 gap-2 overflow-y-auto overflow-x-visible pl-0.5 pr-2 pb-3`}
-              style={{ maxHeight: "24%", paddingTop: DRAWER_TOP_SAFE_ZONE, scrollbarWidth: "none" }}
-            >
-              {contextItems.length > 0 ? (
-                contextItems.map((item) => (
-                  <ContextMiniCard
-                    key={item.id}
-                    item={item}
-                    isActive={activeSuggestion?.id === item.id}
-                    onSelect={onChatContextSelect}
-                  />
-                ))
-              ) : (
-                <div className="col-span-2 rounded-2xl border border-dashed border-white/75 bg-white/42 px-3 py-2 text-[11px] text-slate-600 backdrop-blur-[8px]">
-                  {isChat
-                    ? copy.emptyChat
-                    : copy.emptySuggestions}
-                </div>
-              )}
-            </div>
-
-            <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[24px] border border-white/65 bg-white/32 p-3 shadow-[0_10px_26px_rgba(0,0,0,0.10)] backdrop-blur-[12px]">
-              <div className="mb-3 flex items-center border-b border-white/65 pb-2">
-                <div className="inline-flex rounded-full border border-white/80 bg-white/76 p-1 shadow-sm">
-                  <button
-                    type="button"
-                    onClick={() => onToggleMode("tip")}
-                    className={`relative rounded-full px-3 py-1.5 text-xs font-semibold transition ${
-                      isTip ? "text-white" : "text-slate-600 hover:bg-white"
-                    }`}
-                    style={isTip ? { background: "linear-gradient(180deg, #3E5A8F 0%, #182338 100%)" } : undefined}
-                  >
-                    {copy.suggestionsTab}
-                    {hasTipSignal ? (
-                      <span
-                        className={`ml-1.5 inline-block h-1.5 w-1.5 rounded-full ${isTip ? "bg-white/80" : "bg-fuchsia-400"}`}
-                        aria-hidden
-                      />
-                    ) : null}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onToggleMode("chat")}
-                    ref={chatButtonRef}
-                    className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
-                      isChat ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-white"
-                    } ${isChatDropActive ? "ring-2 ring-teal-300/70" : ""}`}
-                  >
-                    {copy.workspaceTab}
-                  </button>
+          {!selectedNode && showDrawerHint ? (
+            <div className="pointer-events-none absolute inset-x-8 top-[62px] z-[11] flex justify-center">
+              <div
+                className="origin-top-center scale-[0.46] sm:scale-[0.485] lg:scale-[0.505]"
+                style={{
+                  width: "520px",
+                  height: "58px",
+                }}
+              >
+                <div
+                  className="flex h-[58px] w-[520px] items-center gap-[7px] rounded-[30px] pl-[14px] pr-[19px]"
+                  style={{
+                    background: "#FFFFFF",
+                    opacity: 0.85,
+                    boxShadow: "0px 1px 10px rgba(33, 97, 5, 0.08)",
+                  }}
+                >
+                  <div className="flex translate-x-[6px] items-center gap-[7px]">
+                    <Sparkles className="h-[36px] w-[34px] shrink-0 text-[#FD9A00]" strokeWidth={1.8} />
+                    <div
+                      className="whitespace-nowrap"
+                      style={{
+                        width: "432px",
+                        height: "34px",
+                        fontFamily: '"Pretendard Variable", "Instrument Sans", sans-serif',
+                        fontStyle: "normal",
+                        fontWeight: 600,
+                        fontSize: "18.8905px",
+                        lineHeight: "180%",
+                        color: "#758E71",
+                      }}
+                    >
+                      Start with a thought, or select a node to extend it.
+                    </div>
+                  </div>
                 </div>
               </div>
+            </div>
+          ) : null}
+          <div className="relative z-10 flex h-full min-h-0 flex-col justify-end px-6 pb-5 pt-[24px]">
+            <div className="flex max-h-[89vh] min-h-0 flex-col gap-3">
+            {shouldShowContextPanel ? (
+              <div
+                ref={contextScrollRef}
+                className={`grid ${isChat ? "grid-cols-1" : "grid-cols-2"} shrink-0 gap-2 overflow-y-auto overflow-x-visible pl-0.5 pr-2 pb-3`}
+                style={{ maxHeight: "24%", paddingTop: DRAWER_TOP_SAFE_ZONE, scrollbarWidth: "none" }}
+              >
+                {contextItems.length > 0 ? (
+                  contextItems.map((item) => (
+                    <ContextMiniCard
+                      key={item.id}
+                      item={item}
+                      isActive={activeSuggestion?.id === item.id}
+                      onSelect={onChatContextSelect}
+                    />
+                  ))
+                ) : (
+                  <div className="col-span-2 rounded-2xl border border-dashed border-white/75 bg-white/42 px-3 py-2 text-[11px] text-slate-600 backdrop-blur-[8px]">
+                    {copy.emptySuggestions}
+                  </div>
+                )}
+              </div>
+            ) : null}
+
+            <div className={`${shouldShowContextPanel ? "-mt-4 pt-7" : "-mt-[459px] pt-[555px]"} flex min-h-0 flex-1 flex-col overflow-hidden rounded-[24px] border border-white/65 bg-[rgba(255,255,255,0.3)] px-3 pb-3 shadow-[0_10px_26px_rgba(0,0,0,0.10)] backdrop-blur-[12px]`}>
 
               <div className="min-h-0 flex-1 overflow-hidden rounded-2xl border border-white/60 bg-white/25 px-3 py-2 text-sm text-slate-700 backdrop-blur-[12px]">
                 <div className="flex h-full min-h-0 flex-col">
@@ -572,13 +609,11 @@ export default function RightAgentDrawer({
                           </div>
                         )}
                       </div>
-                    ) : (
+                    ) : !isChat ? (
                       <div className="rounded-xl border border-dashed border-white/70 bg-white/35 px-3 py-2 text-xs text-slate-600">
-                        {isChat
-                          ? copy.emptyWorkspace
-                          : copy.emptySuggestionState}
+                        {copy.emptySuggestionState}
                       </div>
-                    )}
+                    ) : null}
 
                     <CandidateGraphCard
                       candidateGraph={candidateGraph}
@@ -586,13 +621,6 @@ export default function RightAgentDrawer({
                       onCommit={onCommitCandidateNodes}
                       onCommitAsPrivate={onCommitCandidateNodesAsPrivate}
                       onDiscard={onDiscardCandidateNodes}
-                    />
-
-                    <ActivityLogCard
-                      projectLastUpdated={projectLastUpdated}
-                      lastRefreshedAt={lastRefreshedAt}
-                      activityLog={activityLog}
-                      onRefresh={onRefreshActivity}
                     />
 
                     <div className="flex flex-col gap-2">
@@ -629,14 +657,16 @@ export default function RightAgentDrawer({
                   </div>
 
                     <div className="shrink-0 border-t border-white/65 pt-2">
-                      <form onSubmit={handleChatSubmit} className="flex items-center gap-1.5">
-                        <div className="relative min-w-0 flex-1">
-                          {isChatLoading && chatInput ? (
+                      <form onSubmit={handleChatSubmit} className="flex justify-center">
+                        <div className="relative h-[94px] w-full max-w-[342px] rounded-[20px] bg-white shadow-[2px_2px_8px_rgba(172,172,172,0.2)]">
+                          {loadingOverlayText ? (
                             <div
-                              className="drawer-loading-gradient-text pointer-events-none absolute inset-0 flex items-center rounded-xl px-3 py-2 text-xs font-bold"
+                              className={`drawer-loading-gradient-text pointer-events-none absolute inset-x-[16px] top-[14px] flex items-start transition-opacity duration-200 ${
+                                isLoadingOverlayExiting ? "opacity-0" : "opacity-100"
+                              }`}
                               aria-hidden="true"
                             >
-                              <span className="block w-full truncate">{chatInput}</span>
+                              <span className="block w-full text-[10.6px] font-medium leading-[130%]">{loadingOverlayText}</span>
                             </div>
                           ) : null}
                           <input
@@ -644,21 +674,21 @@ export default function RightAgentDrawer({
                             onChange={(event) => onChatInputChange?.(event.target.value)}
                             placeholder={selectedNode ? "Add a related thought..." : "Add a thought..."}
                             disabled={isChatLoading}
-                            className={`min-w-0 w-full rounded-xl border border-white/70 bg-white/82 px-3 py-2 text-xs outline-none focus:border-teal-300 ${
-                              isChatLoading && chatInput
+                            className={`h-full w-full rounded-[20px] border-none bg-transparent px-[16px] pb-[38px] pt-[14px] text-[10.6px] font-medium leading-[130%] outline-none ${
+                              loadingOverlayText
                                 ? "text-transparent caret-transparent placeholder:text-transparent"
-                                : "text-slate-700 placeholder:text-slate-400"
+                                : "text-slate-700 placeholder:text-[#A4B2C6]"
                             }`}
                           />
+                          <button
+                            type="submit"
+                            disabled={isChatLoading || !chatInput?.trim()}
+                            className="absolute bottom-[11px] right-[11px] inline-flex h-[37px] w-[37px] items-center justify-center rounded-full border border-[rgba(97,129,95,0.53)] bg-[linear-gradient(136.99deg,rgba(199,255,232,0.2)_-0.49%,rgba(19,158,89,0.2)_142.16%),linear-gradient(0deg,rgba(147,205,186,0.2),rgba(147,205,186,0.2))] text-[rgba(52,89,46,0.75)] transition disabled:cursor-not-allowed disabled:opacity-50"
+                            aria-label="Send message"
+                          >
+                            <ArrowUp className="h-[20px] w-[20px]" strokeWidth={2.1} />
+                          </button>
                         </div>
-                        <button
-                          type="submit"
-                          disabled={isChatLoading || !chatInput?.trim()}
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-teal-500 text-white transition hover:bg-teal-600 disabled:cursor-not-allowed disabled:opacity-50"
-                          aria-label="Send message"
-                        >
-                          <Send className="h-3.5 w-3.5" />
-                        </button>
                       </form>
 
                       {activeSuggestion && chatMessages.length >= 2 && (

@@ -726,11 +726,11 @@ export default function ThinkingMachine({
         const trimmedText = chatInput.trim();
         if (!trimmedText || isAnalyzing) return;
 
+        setChatInput("");
         await handleInputSubmit({
             text: trimmedText,
             selectedNode,
         });
-        setChatInput("");
     }, [chatInput, handleInputSubmit, isAnalyzing, selectedNode, setChatInput]);
 
     return (
@@ -877,7 +877,6 @@ export default function ThinkingMachine({
                             projectLastUpdated={projectLastUpdated}
                             activityLog={activityLog}
                             lastRefreshedAt={lastRefreshedAt}
-                            onRefreshActivity={refreshProjectCollaborationMeta}
                             chatMessages={chatMessages}
                             chatInput={chatInput}
                             isChatLoading={isAnalyzing || isChatLoading}
@@ -896,22 +895,6 @@ export default function ThinkingMachine({
                             candidateHint={reasoningModeProfile.candidateHint}
                             selectedNodeQuickActions={reasoningModeProfile.selectedNodeActions}
                             uiLanguage="en"
-                            attachedContext={
-                                attachedNodes.length
-                                    ? {
-                                        id: "attached-nodes",
-                                        type: "attachedNodes",
-                                        title: attachedNodes.length === 1 ? "Attached node" : `Attached nodes (${attachedNodes.length})`,
-                                        content: "Use these nodes as the primary context for this chat.",
-                                        category: "Insight",
-                                        phase: "Problem",
-                                        sourceType: "mixed",
-                                        visibility: "shared",
-                                        confidence: "medium",
-                                        attached_nodes: attachedNodes,
-                                    }
-                                    : null
-                            }
                             chatButtonRef={chatButtonRef}
                             chatDropZoneRef={chatDropZoneRef}
                             isChatDropActive={isChatDropActive}

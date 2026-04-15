@@ -227,14 +227,17 @@ h6,
   background-image: linear-gradient(
     90deg,
     #386644 0%,
-    #4f8f39 18%,
-    #6de422 42%,
-    #9fea5c 62%,
-    #d9c97f 80%,
-    #ffa397 100%
+    #46773f 12%,
+    #5ea841 26%,
+    #6de422 40%,
+    #97ed58 54%,
+    #d6d07a 72%,
+    #ffa397 86%,
+    #8fb853 94%,
+    #386644 100%
   );
-  background-size: 260% 100%;
-  animation: drawerGradientFlow 3.4s ease-in-out infinite;
+  background-size: 220% 100%;
+  animation: drawerGradientFlow 4.2s ease-in-out infinite;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
