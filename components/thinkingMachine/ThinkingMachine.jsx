@@ -34,7 +34,6 @@ const INITIAL_NODES = [];
 const INITIAL_EDGES = [];
 const ADMIN_MODE_STORAGE_KEY = "vtm-admin-mode-enabled";
 const ADMIN_HINT_DISMISSED_KEY = "vtm-admin-shortcut-hint-dismissed";
-const ADMIN_SHORTCUT_LABEL = "Ctrl/Cmd + Shift + A";
 const PERSONAL_VISIBILITY = new Set(["private", "candidate"]);
 const TEAM_VISIBILITY = new Set(["shared", "reviewed", "agreed"]);
 const MOCK_CURRENT_USER_ID = "mock-user-1";
@@ -118,7 +117,7 @@ export default function ThinkingMachine({
     const [activityLog, setActivityLog] = useState([]);
     const [lastRefreshedAt, setLastRefreshedAt] = useState(null);
 
-    const { isAdminMode, showAdminShortcutHint, dismissAdminShortcutHint } = useAdminMode({
+    const { isAdminMode } = useAdminMode({
         storageKey: ADMIN_MODE_STORAGE_KEY,
         hintDismissedKey: ADMIN_HINT_DISMISSED_KEY,
     });
@@ -762,23 +761,6 @@ export default function ThinkingMachine({
                 onDrawerModeChange={handleDrawerModeChange}
                 isDrawerOpen={isDrawerOpen}
             />
-
-            {showAdminShortcutHint && (
-                <div className="pointer-events-auto absolute left-1/2 top-14 z-[80] -translate-x-1/2">
-                    <div className="flex items-center gap-3 rounded-2xl border border-white/70 bg-white/78 px-4 py-2 text-xs text-slate-700 shadow-lg backdrop-blur-md">
-                        <span>
-                            Press <span className="font-semibold">{ADMIN_SHORTCUT_LABEL}</span> to toggle Admin Mode.
-                        </span>
-                        <button
-                            type="button"
-                            className="rounded-full border border-slate-300/80 px-2.5 py-1 text-[11px] font-semibold text-slate-600 transition hover:bg-white"
-                            onClick={dismissAdminShortcutHint}
-                        >
-                            Dismiss
-                        </button>
-                    </div>
-                </div>
-            )}
 
             <header className="absolute top-0 left-0 right-0 z-50 p-6 flex justify-end items-center bg-transparent pointer-events-none">
                 <div className="flex gap-2 pointer-events-auto">
