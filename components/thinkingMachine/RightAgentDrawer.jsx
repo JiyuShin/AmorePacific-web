@@ -395,7 +395,7 @@ export default function RightAgentDrawer({
   const sourceMeta = getSourceTypeMeta(activeMeta.sourceType);
   const visibilityMeta = getVisibilityMeta(activeMeta.visibility);
   const drawerFieldBaseFade =
-    "linear-gradient(169.55deg, rgba(199, 251, 201, 0.5) 9.44%, rgba(179, 236, 236, 0.295) 97.4%)";
+    "linear-gradient(169.55deg, rgba(199, 251, 201, 0.3) 9.44%, rgba(179, 236, 236, 0.3) 97.4%)";
   const drawerFieldRadialAlpha = "none";
   const drawerFieldLemonStrip = "none";
   const drawerFieldEdgeOverlay = "none";

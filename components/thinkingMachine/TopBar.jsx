@@ -64,10 +64,6 @@ export default function TopBar({
     onStageChange(nextStage);
   };
 
-  const isResearch = mode === "research";
-  const isIdeation = mode === "design";
-  const isDiverge = flow === "diverge";
-  const isConverge = flow === "converge";
   const isTipSelected = isDrawerOpen && drawerMode === "tip";
   const isChatSelected = isDrawerOpen && drawerMode === "chat";
 
@@ -91,52 +87,52 @@ export default function TopBar({
             style={TOPBAR_CENTER_TEXT_STYLE}
             transition={{ layout: { duration: 0.28, ease: [0.22, 1, 0.36, 1] } }}
           >
-            <Link
-              href={projectMetaHref}
-              className="inline-flex shrink-0 transition hover:text-slate-900"
-              style={TOPBAR_CENTER_TEXT_STYLE}
-            >
-              {projectMetaLabel}
-            </Link>
-            <span className="text-slate-400/80">/</span>
-            <div className="min-w-0 flex-1">
-              {isEditingTitle ? (
-                <motion.input
-                  layout="position"
-                  value={draftTitle}
-                  onChange={(event) => setDraftTitle(event.target.value)}
-                  onBlur={commitTitle}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") {
-                      event.preventDefault();
-                      commitTitle();
-                    }
-                    if (event.key === "Escape") {
-                      setDraftTitle(projectTitle || "Untitled Project");
-                      setIsEditingTitle(false);
-                    }
-                  }}
-                  autoFocus
-                  className="w-full border-none bg-transparent px-0 py-0 text-[14px] font-medium text-slate-800 outline-none shadow-none"
-                  style={TOPBAR_CENTER_TEXT_STYLE}
-                  aria-label="Project title"
-                  transition={{ layout: { duration: 0.28, ease: [0.22, 1, 0.36, 1] } }}
-                />
-              ) : (
-                <motion.button
-                  layout="position"
-                  type="button"
-                  onClick={() => setIsEditingTitle(true)}
-                  className="max-w-full truncate text-left text-[14px] font-medium text-slate-700/88 transition hover:text-slate-900"
-                  style={TOPBAR_CENTER_TEXT_STYLE}
-                  aria-label="Edit project title"
-                  title="Rename project"
-                  transition={{ layout: { duration: 0.28, ease: [0.22, 1, 0.36, 1] } }}
-                >
-                  {projectTitle || "Untitled Project"}
-                </motion.button>
-              )}
-            </div>
+              <Link
+                href={projectMetaHref}
+                className="inline-flex shrink-0 transition hover:text-slate-900"
+                style={TOPBAR_CENTER_TEXT_STYLE}
+              >
+                {projectMetaLabel}
+              </Link>
+              <span className="text-slate-400/80">/</span>
+              <div className="min-w-0 flex-1">
+                {isEditingTitle ? (
+                  <motion.input
+                    layout="position"
+                    value={draftTitle}
+                    onChange={(event) => setDraftTitle(event.target.value)}
+                    onBlur={commitTitle}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        event.preventDefault();
+                        commitTitle();
+                      }
+                      if (event.key === "Escape") {
+                        setDraftTitle(projectTitle || "Untitled Project");
+                        setIsEditingTitle(false);
+                      }
+                    }}
+                    autoFocus
+                    className="w-full border-none bg-transparent px-0 py-0 text-[14px] font-medium text-slate-800 outline-none shadow-none"
+                    style={TOPBAR_CENTER_TEXT_STYLE}
+                    aria-label="Project title"
+                    transition={{ layout: { duration: 0.28, ease: [0.22, 1, 0.36, 1] } }}
+                  />
+                ) : (
+                  <motion.button
+                    layout="position"
+                    type="button"
+                    onClick={() => setIsEditingTitle(true)}
+                    className="max-w-full truncate text-left text-[14px] font-medium text-slate-700/88 transition hover:text-slate-900"
+                    style={TOPBAR_CENTER_TEXT_STYLE}
+                    aria-label="Edit project title"
+                    title="Rename project"
+                    transition={{ layout: { duration: 0.28, ease: [0.22, 1, 0.36, 1] } }}
+                  >
+                    {projectTitle || "Untitled Project"}
+                  </motion.button>
+                )}
+              </div>
           </motion.div>
         </div>
 
@@ -144,70 +140,42 @@ export default function TopBar({
 
         <div className="w-[382px] translate-x-[7px] justify-self-end">
           <div className="flex flex-col items-end gap-3">
-          <div className="pointer-events-auto flex w-full items-start justify-between">
-            <div className="inline-flex rounded-full bg-white/80 px-1 py-0.5 shadow-sm border border-white/70">
+          <div className="pointer-events-auto flex w-full items-start justify-end">
+            <div
+              className="inline-flex h-[27px] w-[130px] items-center rounded-[25px] px-[3px] shadow-[0.5px_1px_5px_rgba(0,0,0,0.1)]"
+              style={{ background: "#F6F6F2" }}
+            >
               <button
                 type="button"
                 onClick={() => onCanvasModeChange?.("personal")}
-                className={`px-2.5 py-0.5 text-[10px] font-semibold rounded-full transition ${
-                  canvasMode === "personal"
-                    ? "text-white"
-                    : "text-slate-600 hover:bg-white"
-                }`}
-                style={canvasMode === "personal" ? { background: "linear-gradient(180deg, #3E5A8F 0%, #182338 100%)" } : undefined}
+                className="inline-flex h-[22px] w-[64px] items-center justify-center rounded-[25px] transition"
+                style={{
+                  background: canvasMode === "personal" ? "#7BA592" : "transparent",
+                  fontFamily: '"Pretendard Variable", "Instrument Sans", sans-serif',
+                  fontStyle: "normal",
+                  fontWeight: 700,
+                  fontSize: "10.3838px",
+                  lineHeight: "180%",
+                  color: canvasMode === "personal" ? "#FFFFFF" : "#929B94",
+                }}
               >
                 Personal
               </button>
               <button
                 type="button"
                 onClick={() => onCanvasModeChange?.("team")}
-                className={`px-2.5 py-0.5 text-[10px] font-semibold rounded-full transition ${
-                  canvasMode === "team" ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-white"
-                }`}
+                className="inline-flex h-[22px] w-[60px] items-center justify-center rounded-[25px] transition"
+                style={{
+                  background: canvasMode === "team" ? "#7BA592" : "transparent",
+                  fontFamily: '"Pretendard Variable", "Instrument Sans", sans-serif',
+                  fontStyle: "normal",
+                  fontWeight: 700,
+                  fontSize: "10.3838px",
+                  lineHeight: "180%",
+                  color: canvasMode === "team" ? "#FFFFFF" : "#929B94",
+                }}
               >
                 Team
-              </button>
-            </div>
-            <div className="inline-flex rounded-full bg-white/80 px-1 py-0.5 shadow-sm border border-white/70">
-              <button
-                type="button"
-                onClick={() => handleModeClick("research")}
-                className={`px-2 py-0.5 text-[10px] font-semibold rounded-full transition ${
-                  isResearch ? "text-white" : "text-slate-600 hover:bg-white"
-                }`}
-                style={isResearch ? { background: "linear-gradient(180deg, #3E5A8F 0%, #182338 100%)" } : undefined}
-              >
-                Research
-              </button>
-              <button
-                type="button"
-                onClick={() => handleModeClick("design")}
-                className={`px-2 py-0.5 text-[10px] font-semibold rounded-full transition ${
-                  isIdeation ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-white"
-                }`}
-              >
-                Design
-              </button>
-            </div>
-            <div className="inline-flex rounded-full bg-white/80 px-1 py-0.5 shadow-sm border border-white/70">
-              <button
-                type="button"
-                onClick={() => handleFlowClick("diverge")}
-                className={`px-2 py-0.5 text-[10px] font-semibold rounded-full transition ${
-                  isDiverge ? "text-white" : "text-slate-600 hover:bg-white"
-                }`}
-                style={isDiverge ? { background: "linear-gradient(180deg, #3E5A8F 0%, #182338 100%)" } : undefined}
-              >
-                Diverge
-              </button>
-              <button
-                type="button"
-                onClick={() => handleFlowClick("converge")}
-                className={`px-2 py-0.5 text-[10px] font-semibold rounded-full transition ${
-                  isConverge ? "bg-amber-400 text-slate-900" : "text-slate-600 hover:bg-white"
-                }`}
-              >
-                Converge
               </button>
             </div>
           </div>
