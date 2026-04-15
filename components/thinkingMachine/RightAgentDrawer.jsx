@@ -554,7 +554,7 @@ export default function RightAgentDrawer({
               </div>
             ) : null}
 
-            <div className={`${shouldShowContextPanel ? "-mt-4 pt-7" : "-mt-[518px] pt-[614px]"} -mr-[3.5px] flex min-h-0 flex-1 flex-col overflow-hidden rounded-[24px] border border-white/65 bg-[rgba(255,255,255,0.3)] px-3 pb-3 shadow-[0_10px_26px_rgba(0,0,0,0.10)] backdrop-blur-[12px]`}>
+            <div className={`${shouldShowContextPanel ? "-mt-px pt-[13px]" : "-mt-[518px] pt-[614px]"} -mr-[3.5px] flex min-h-0 flex-1 flex-col overflow-hidden rounded-[24px] border border-white/65 bg-[rgba(255,255,255,0.3)] px-3 pb-3 shadow-[0_10px_26px_rgba(0,0,0,0.10)] backdrop-blur-[12px]`}>
 
               <div className="min-h-0 flex-1 overflow-hidden px-3 py-2 text-sm text-slate-700">
                 <div className="flex h-full min-h-0 flex-col">
@@ -657,16 +657,22 @@ export default function RightAgentDrawer({
                   </div>
 
                     <div className="shrink-0 pt-0">
-                      <form onSubmit={handleChatSubmit} className="-mx-[10px] mt-[24px] flex translate-y-[8px] justify-center">
-                        <div className="relative h-[90px] w-full rounded-[15px] bg-white shadow-[2px_2px_8px_rgba(172,172,172,0.2)]">
+                      <form onSubmit={handleChatSubmit} className="-mx-[10px] mt-[15px] flex justify-center">
+                        <div className="relative top-[7.5px] h-[115px] w-full">
+                          <div className="absolute bottom-0 h-[95px] w-full rounded-[15px] bg-white shadow-[2px_2px_8px_rgba(172,172,172,0.2)]">
                           {loadingOverlayText ? (
                             <div
-                              className={`drawer-loading-gradient-text pointer-events-none absolute inset-x-[18px] top-[-12px] flex items-start transition-opacity duration-200 ${
+                              className={`pointer-events-none absolute inset-0 transition-opacity duration-200 ${
                                 isLoadingOverlayExiting ? "opacity-0" : "opacity-100"
                               }`}
                               aria-hidden="true"
                             >
-                              <span className="block w-full text-[13px] font-medium leading-[130%]">{loadingOverlayText}</span>
+                              <input
+                                value={loadingOverlayText}
+                                readOnly
+                                tabIndex={-1}
+                                className="drawer-loading-gradient-text relative -top-[3px] h-full w-full rounded-[15px] border-none bg-transparent px-[18px] pb-[44px] pt-[0px] text-[13px] font-medium leading-[130%] outline-none"
+                              />
                             </div>
                           ) : null}
                           <input
@@ -674,7 +680,7 @@ export default function RightAgentDrawer({
                             onChange={(event) => onChatInputChange?.(event.target.value)}
                             placeholder={selectedNode ? "Add a related thought..." : "Add a thought..."}
                             disabled={isChatLoading}
-                            className={`relative -top-[12px] h-full w-full rounded-[15px] border-none bg-transparent px-[18px] pb-[44px] pt-[0px] text-[13px] font-medium leading-[130%] outline-none ${
+                            className={`relative -top-[3px] h-full w-full rounded-[15px] border-none bg-transparent px-[18px] pb-[44px] pt-[0px] text-[13px] font-medium leading-[130%] outline-none ${
                               loadingOverlayText
                                 ? "text-transparent caret-transparent placeholder:text-transparent"
                                 : "text-slate-700 placeholder:text-[#A4B2C6]"
@@ -688,6 +694,7 @@ export default function RightAgentDrawer({
                           >
                             <ArrowUp className="h-[18px] w-[18px]" strokeWidth={2.1} />
                           </button>
+                        </div>
                         </div>
                       </form>
 

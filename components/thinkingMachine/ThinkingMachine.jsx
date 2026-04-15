@@ -725,11 +725,11 @@ export default function ThinkingMachine({
         const trimmedText = chatInput.trim();
         if (!trimmedText || isAnalyzing) return;
 
-        setChatInput("");
         await handleInputSubmit({
             text: trimmedText,
             selectedNode,
         });
+        setChatInput("");
     }, [chatInput, handleInputSubmit, isAnalyzing, selectedNode, setChatInput]);
 
     return (
