@@ -554,9 +554,9 @@ export default function RightAgentDrawer({
               </div>
             ) : null}
 
-            <div className={`${shouldShowContextPanel ? "-mt-4 pt-7" : "-mt-[459px] pt-[555px]"} flex min-h-0 flex-1 flex-col overflow-hidden rounded-[24px] border border-white/65 bg-[rgba(255,255,255,0.3)] px-3 pb-3 shadow-[0_10px_26px_rgba(0,0,0,0.10)] backdrop-blur-[12px]`}>
+            <div className={`${shouldShowContextPanel ? "-mt-4 pt-7" : "-mt-[463px] pt-[559px]"} -mr-[3.5px] flex min-h-0 flex-1 flex-col overflow-hidden rounded-[24px] border border-white/65 bg-[rgba(255,255,255,0.3)] px-3 pb-3 shadow-[0_10px_26px_rgba(0,0,0,0.10)] backdrop-blur-[12px]`}>
 
-              <div className="min-h-0 flex-1 overflow-hidden rounded-2xl border border-white/60 bg-white/25 px-3 py-2 text-sm text-slate-700 backdrop-blur-[12px]">
+              <div className="min-h-0 flex-1 overflow-hidden px-3 py-2 text-sm text-slate-700">
                 <div className="flex h-full min-h-0 flex-col">
                   <div
                     ref={panelScrollRef}
